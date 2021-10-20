@@ -70,8 +70,8 @@ def time_series(token)
                 pr = opened + closed
 
                 total_number_pr_authors = pr_authors(pr).uniq.count
-
-                total_number_issues = client.search_issues("repo:#{row[0]} is:issue").items
+                #Refactor to size of items array
+                total_number_issues = client.search_issues("repo:#{row[0]} is:issue").total_count
                 sleep(2)
             end
         rescue => e
@@ -112,8 +112,13 @@ def time_series(token)
                     (date >> 6) - 15,
                     (date >> 7) - 15
                 ]
-
-                lang = CSV.foreach('data/dataset_final.csv').select{ |data| data[0] == row[0] }[0][1]
+                testLangs = client.languages('facebook/react')
+                testVal = testLangs.max_by{|k,v| v}[0]
+                repo = CSV.foreach('data/dataset_final.csv').select{ |data| data[0] == row[0]}[0][0]
+                langs = client.languages(repo)
+                lang = "NONE"
+                #If we have at least one language, choose the most significant one. 
+                if(langs.attrs.size > 0) then lang = langs.max_by{|k,v| v}[0] end
                 commits = client.contribs(row[0]).map { |item| item.contributions }.sum
 
                 age_at_bot = pr_age(token, spinner, row[0], date)
@@ -164,7 +169,8 @@ def time_series(token)
                         0,
                         row[2],
                         row[3],
-                        'left_only']
+                        'left_only',
+                        total_number_issues]
                 end
 
                 CSV.open('data/time_series.csv', 'a+') do |ts|
@@ -173,7 +179,7 @@ def time_series(token)
                     end
                 end
             rescue => e # repository no longer exist
-                spinner.error('err: retriving repository')
+                spinner.error(e.message)
                 next
             end
         end
