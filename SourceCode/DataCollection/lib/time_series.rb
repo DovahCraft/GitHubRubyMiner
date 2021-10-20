@@ -16,12 +16,13 @@ def median_of a
     (sorted[(len - 1) / 2] + sorted[len / 2]) / 2.0 
 end 
 
-def time_series(token)
+def time_series(token, filename)
     client = authenticate(token)
 
     client.auto_paginate = true
+    adoption_date_file = "data/" + filename
 
-    CSV.open('data/time_series.csv', 'a+') do |ts|
+    CSV.open("data/time_series.csv", 'a+') do |ts|
         ts << [
             "owner",
             "repo",
@@ -55,7 +56,7 @@ def time_series(token)
     tmp = []
     total_number_pr_authors = 0
 
-    CSV.foreach('data/adoption_date.csv', headers: true).with_index do |row, i|
+    CSV.foreach(adoption_date_file, headers: true).with_index do |row, i|
         spinner = TTY::Spinner.new("[:spinner] #{row[0]}, #{row[1]} time series ...", format: :classic)
         spinner.auto_spin
 

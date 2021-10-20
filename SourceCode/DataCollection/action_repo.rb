@@ -19,4 +19,4 @@ Dir[File.join(__dir__, 'lib', '*.rb')].each { |file| require file }
 #web_scrape_issues
 
 #get_adoption_date
-time_series ARGV[0]
+time_series ARGV[0], ARGV[1]
