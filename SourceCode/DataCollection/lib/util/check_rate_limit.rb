@@ -10,7 +10,7 @@ def check_rate_limit(client, x, spinner, tokens)
     curr_index = 0
     #Refactored to while instead of if with redo.
     while rate_remaining <= x and curr_index < num_tokens
-        spinner.error('ERROR: Rate limit exceeded! Changing token')
+        spinner.error('ERROR: Rate limit exceeded or no client found! Changing token')
         spinner = TTY::Spinner.new("[:spinner] Checking rate limit for token: #{tokens[curr_index]}...", format: :classic)
         spinner.auto_spin
         #If we have trouble authenticating, use a new token.
