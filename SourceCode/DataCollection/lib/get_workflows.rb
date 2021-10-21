@@ -10,10 +10,10 @@ require_relative 'util/check_rate_limit'
 
 def get_workflows(tokens)
   puts "\n======================================\n\nSTARTING GETWORKFLOWS\n\n===========================================\n"
-  firstTok = tokens[0]
-  client = authenticate(firstTok)
   repository_does_not_exists = 0
-
+  client = nil
+  spinner = TTY::Spinner.new("[:spinner] Starting get_workflows...", format: :classic)
+  client = check_rate_limit(client, 50, spinner, tokens)
   CSV.foreach('data/dataset_final.csv', headers: true) do |row|
     spinner = TTY::Spinner.new("[:spinner] Get #{row[0]} workflows ...", format: :classic)
     spinner.auto_spin

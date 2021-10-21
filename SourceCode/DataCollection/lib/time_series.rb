@@ -18,10 +18,12 @@ end
 
 def time_series(tokens, filename)
     firstTok = tokens[0]
-
-    client = authenticate(firstTok)
+    client = nil
+    #Tmp spinner
+    spinner = TTY::Spinner.new("[:spinner] Starting time series ...", format: :classic)
+    client = check_rate_limit(client, 50, spinner, tokens)
     tokTest = client.access_token
-    client.auto_paginate = true
+
     adoption_date_file = "data/" + filename
 
     CSV.open("data/time_series.csv", 'a+') do |ts|

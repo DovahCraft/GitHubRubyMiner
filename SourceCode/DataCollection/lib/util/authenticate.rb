@@ -6,8 +6,8 @@ def authenticate(token)
   client = Octokit::Client.new(access_token: token)
   begin
     client.user
-  rescue StandardError
-    abort('Unsuccessful! (401 - Bad credentials)')
+  rescue StandardError => e
+    raise e
   end
   client
 end
