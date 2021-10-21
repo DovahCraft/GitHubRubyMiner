@@ -20,4 +20,4 @@ tokens = CSV.read("data/tokens.csv")[0]
 #web_scrape_issues
 
 #get_adoption_date
-time_series tokens, ARGV[1]
+time_series tokens, ARGV[0]

@@ -19,7 +19,7 @@ def check_rate_limit(client, x, spinner, tokens)
         client = authenticate(tokens[curr_index])
         rate_remaining = client.rate_limit.remaining
         #Ran outta tokens. 
-        if curr_index == num_tokens then 
+        if curr_index == num_tokens
             curr_index == 0
             #Sleep for longer before checking again.
             spinner.error('WARN: Ran outta tokens, sleeping then retrying.')
