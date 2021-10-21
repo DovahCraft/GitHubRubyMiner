@@ -29,7 +29,7 @@ def check_rate_limit(client, x, spinner, tokens)
             curr_index = 0
             #Sleep for longer before checking again.
             spinner.error('WARN: Ran outta tokens, sleeping then retrying.')
-            sleep(1500) 
+            sleep(750) #12.5min cooldown before checking again.
         end  
     end
     spinner.success
