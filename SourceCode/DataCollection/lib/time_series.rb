@@ -77,7 +77,8 @@ def time_series(tokens, filename)
                 sleep(2)
             end
         rescue => e
-            spinner.error('err: retriving total number of pr authors')
+            spinner.error(e.message)
+            errtrace = e.backtrace
             next
         end
 
