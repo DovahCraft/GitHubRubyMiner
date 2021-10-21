@@ -18,7 +18,13 @@ def check_rate_limit(client, x, spinner, tokens)
         curr_index += 1
         client = authenticate(tokens[curr_index])
         rate_remaining = client.rate_limit.remaining
-        if curr_index == num_tokens then curr_index == 0 end
+        #Ran outta tokens. 
+        if curr_index == num_tokens then 
+            curr_index == 0
+            #Sleep for longer before checking again.
+            spinner.error('WARN: Ran outta tokens, sleeping then retrying.')
+            sleep(1500) 
+        end
         
         spinner.success
         spinner = TTY::Spinner.new("[:spinner] Continuing ...", format: :classic)
