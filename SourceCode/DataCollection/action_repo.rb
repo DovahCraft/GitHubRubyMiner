@@ -7,16 +7,17 @@
 
 Dir[File.join(__dir__, 'lib', '*.rb')].each { |file| require file }
 
+tokens = CSV.read("data/tokens.csv")[0]
 #Comment this out to use small dataset
 #get_dataset
 
-#get_workflows ARGV[0]
+#get_workflows tokens
 
 #get_actions
 #web_scrape_actions
 
-#get_issues ARGV[0]
+#get_issues tokens
 #web_scrape_issues
 
 #get_adoption_date
-time_series ARGV[0], ARGV[1]
+time_series tokens, ARGV[1]

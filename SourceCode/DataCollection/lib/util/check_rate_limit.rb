@@ -3,17 +3,26 @@
 require 'octokit'
 require 'tty-spinner'
 
-def check_rate_limit(client, x, spinner)
-    #Refactored to while instead of if with redo. 
-    while client.rate_limit.remaining <= x
-        spinner.error('ERROR: Rate limit exceeded!')
+def check_rate_limit(client, x, spinner, tokens)
+    num_tokens = tokens.length();
+    #Refactored to while instead of if with redo.
+    rate_remaining = client.rate_limit.remaining
+    while rate_remaining <= x and curr_index < num_tokens
+        spinner.error('ERROR: Rate limit exceeded! Changing token')
         spinner = TTY::Spinner.new("[:spinner] Rate limit resets in #{client.rate_limit.resets_in + 10} seconds ...", format: :classic)
         spinner.auto_spin
 
         sleep(client.rate_limit.resets_in + 10) # additional 10 second cooldown
 
-        spinner.success
+        client = authenticate(tokens[curr_index])
+        rate_remaining = client.rate_limit.remaining
+        curr_index++
 
+        if curr_index == num_tokens then curr_index == 0 end
+        
+        spinner.success
         spinner = TTY::Spinner.new("[:spinner] Continuing ...", format: :classic)
+      
     end
+    return client
 end

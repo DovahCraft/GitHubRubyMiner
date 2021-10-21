@@ -16,9 +16,11 @@ def median_of a
     (sorted[(len - 1) / 2] + sorted[len / 2]) / 2.0 
 end 
 
-def time_series(token, filename)
-    client = authenticate(token)
+def time_series(tokens, filename)
+    firstTok = tokens[0]
 
+    client = authenticate(firstTok)
+    tokTest = client.access_token
     client.auto_paginate = true
     adoption_date_file = "data/" + filename
 
@@ -62,8 +64,7 @@ def time_series(token, filename)
 
         begin
             if tmp.empty? || row[0] != tmp[-1][21]
-                client = authenticate(token)
-                check_rate_limit(client, 50, spinner)
+                client = check_rate_limit(client, 50, spinner, tokens)
 
                 client.auto_paginate = true
                 opened = client.pull_requests(row[0], state: 'open')
@@ -113,8 +114,6 @@ def time_series(token, filename)
                     (date >> 6) - 15,
                     (date >> 7) - 15
                 ]
-                testLangs = client.languages('facebook/react')
-                testVal = testLangs.max_by{|k,v| v}[0]
                 repo = CSV.foreach('data/dataset_final.csv').select{ |data| data[0] == row[0]}[0][0]
                 langs = client.languages(repo)
                 lang = "NONE"
@@ -122,12 +121,11 @@ def time_series(token, filename)
                 if(langs.attrs.size > 0) then lang = langs.max_by{|k,v| v}[0] end
                 commits = client.contribs(row[0]).map { |item| item.contributions }.sum
 
-                age_at_bot = pr_age(token, spinner, row[0], date)
+                age_at_bot = pr_age(client.access_token, spinner, row[0], date, tokens)
                 age_at_bot = 0 if age_at_bot < 0
 
                 13.times do |i|
-                    client = authenticate(token)
-                    check_rate_limit(client, 10, spinner) # 10 call buffer
+                    client = check_rate_limit(client, 10, spinner, tokens) # 10 call buffer
 
                     client.auto_paginate = true
 
@@ -158,8 +156,8 @@ def time_series(token, filename)
                         median_of(pr_comments(nonmerged)),
                         median_of(pr_time_to(pr_created_at(merged), pr_closed_at(merged))),
                         median_of(pr_time_to(pr_created_at(nonmerged), pr_closed_at(nonmerged))),
-                        median_of(pr_commits(token, spinner, row[0], merged)),
-                        median_of(pr_commits(token, spinner, row[0], nonmerged)),
+                        median_of(pr_commits(client.access_token, spinner, row[0], merged, tokens)),
+                        median_of(pr_commits(client.access_token, spinner, row[0], nonmerged, tokens)),
                         lang,
                         total_number_pr_authors,
                         commits,
@@ -170,7 +168,6 @@ def time_series(token, filename)
                         0,
                         row[2],
                         row[3],
-                        'left_only',
                         total_number_issues]
                 end
 
@@ -181,6 +178,8 @@ def time_series(token, filename)
                 end
             rescue => e # repository no longer exist
                 spinner.error(e.message)
+                errbak = e.backtrace
+                puts errbak
                 next
             end
         end

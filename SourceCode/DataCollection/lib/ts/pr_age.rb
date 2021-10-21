@@ -5,10 +5,10 @@ require 'octokit'
 require_relative '../util/authenticate'
 require_relative '../util/check_rate_limit'
 
-def pr_age(token, spinner, repo, date)
+def pr_age(token, spinner, repo, date, tokens)
     #if has pull requests
     client = authenticate(token)
-    check_rate_limit(client, 10, spinner) # 10 call buffer
+    check_rate_limit(client, 10, spinner, tokens) # 10 call buffer
 
     opened = client.pull_requests(repo, state: 'opened')
     closed = client.pull_requests(repo, state: 'closed')
@@ -20,7 +20,7 @@ def pr_age(token, spinner, repo, date)
             i = i + 1
 
             client = authenticate(token)
-            check_rate_limit(client, 10, spinner) # 10 call buffer
+            check_rate_limit(client, 10, spinner, tokens) # 10 call buffer
         
             begin
                 time = client.pull_request(repo, i).created_at

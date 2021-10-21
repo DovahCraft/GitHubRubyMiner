@@ -3,11 +3,11 @@
 require_relative '../util/authenticate'
 require_relative '../util/check_rate_limit'
 
-def pr_commits(token, spinner, repo, pr)
+def pr_commits(token, spinner, repo, pr, tokens)
     tmp = []
     pr.map do |item|
         client = authenticate(token)
-        check_rate_limit(client, 10, spinner) # 10 call buffer
+        check_rate_limit(client, 10, spinner, tokens) # 10 call buffer
 
         client.auto_paginate = true
 

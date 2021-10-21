@@ -8,18 +8,18 @@ require 'tty-spinner'
 require_relative 'util/authenticate'
 require_relative 'util/check_rate_limit'
 
-def get_workflows(token)
+def get_workflows(tokens)
   puts "\n======================================\n\nSTARTING GETWORKFLOWS\n\n===========================================\n"
+  firstTok = tokens[0]
+  client = authenticate(firstTok)
   repository_does_not_exists = 0
-  client = authenticate(token)
 
   CSV.foreach('data/dataset_final.csv', headers: true) do |row|
     spinner = TTY::Spinner.new("[:spinner] Get #{row[0]} workflows ...", format: :classic)
     spinner.auto_spin
 
     begin
-      client = authenticate(token)
-      check_rate_limit(client, 0, spinner)
+      client = check_rate_limit(client, 0, spinner, tokens)
 
       if client.repository?(row[0]) # if repository exists
         workflows = client.contents(row[0], path: '.github/workflows')
@@ -27,12 +27,10 @@ def get_workflows(token)
         workflows.each do |workflow|
           next unless File.extname(workflow.name) == '.yml' or File.extname(workflow.name) == '.yaml' # next unless a workflow file
 
-          client = authenticate(token)
-          check_rate_limit(client, 10, spinner) # 10 call buffer
+          client = check_rate_limit(client, 10, spinner, tokens) # 10 call buffer
           commits = client.commits(row[0], path: ".github/workflows/#{workflow.name}")
 
-          client = authenticate(token)
-          check_rate_limit(client, commits.count, spinner)
+          client = check_rate_limit(client, commits.count, spinner, tokens)
 
           commits.reverse_each do |commit|
               dest = "data/workflows/#{row[0]}/#{workflow.name}"
