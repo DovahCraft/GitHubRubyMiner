@@ -24,7 +24,7 @@ def time_series(tokens, filename)
     client = check_rate_limit(client, 50, spinner, tokens)
     tokTest = client.access_token
 
-    adoption_date_file = "data/" + filename
+    adoption_date_file = "data/adoption_date.csv"
 
     CSV.open("data/time_series.csv", 'a+') do |ts|
         ts << [

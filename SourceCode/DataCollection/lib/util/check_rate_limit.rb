@@ -13,10 +13,6 @@ def check_rate_limit(client, x, spinner, tokens)
         spinner.error('ERROR: Rate limit exceeded! Changing token')
         spinner = TTY::Spinner.new("[:spinner] Checking rate limit for token: #{tokens[curr_index]}...", format: :classic)
         spinner.auto_spin
-
-        sleep(5) # additional 10 second cooldown
-
-        
         #If we have trouble authenticating, use a new token.
         begin
             #Check if this token is valid before authing.
@@ -30,15 +26,13 @@ def check_rate_limit(client, x, spinner, tokens)
         curr_index += 1
         #Ran outta tokens. 
         if curr_index == num_tokens
-            curr_index == 0
+            curr_index = 0
             #Sleep for longer before checking again.
             spinner.error('WARN: Ran outta tokens, sleeping then retrying.')
             sleep(1500) 
-        end
-        
-        spinner.success
-        spinner = TTY::Spinner.new("[:spinner] Continuing ...", format: :classic)
-      
+        end  
     end
+    spinner.success
+    spinner = TTY::Spinner.new("[:spinner] Continuing ...", format: :classic)
     return client
 end
