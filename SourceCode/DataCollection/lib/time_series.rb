@@ -16,11 +16,12 @@ def median_of a
     (sorted[(len - 1) / 2] + sorted[len / 2]) / 2.0 
 end 
 
-def time_series(tokens, filename)
+def time_series(tokens)
     firstTok = tokens[0]
     client = nil
     #Tmp spinner
     spinner = TTY::Spinner.new("[:spinner] Starting time series ...", format: :classic)
+    spinner.auto_spin
     client = check_rate_limit(client, 50, spinner, tokens)
     tokTest = client.access_token
 
@@ -67,6 +68,8 @@ def time_series(tokens, filename)
         begin
             if tmp.empty? || row[0] != tmp[-1][21]
                 client = check_rate_limit(client, 50, spinner, tokens)
+                spinner = TTY::Spinner.new("[:spinner] #{row[0]}, #{row[1]} time series ...", format: :classic)
+                spinner.auto_spin
 
                 client.auto_paginate = true
                 opened = client.pull_requests(row[0], state: 'open')

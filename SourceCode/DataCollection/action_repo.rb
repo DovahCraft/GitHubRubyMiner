@@ -11,13 +11,13 @@ tokens = CSV.read("data/tokens.csv")[0]
 #Comment this out to use small dataset
 #get_dataset
 
-get_workflows tokens
+#get_workflows tokens
 
-get_actions
-web_scrape_actions
+#get_actions
+#web_scrape_actions
 
-get_issues tokens
-web_scrape_issues
+#get_issues tokens
+#web_scrape_issues
 
-get_adoption_date
+#get_adoption_date
 time_series tokens
